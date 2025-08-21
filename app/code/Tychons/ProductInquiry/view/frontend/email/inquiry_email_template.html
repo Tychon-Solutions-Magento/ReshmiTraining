@@ -1,0 +1,30 @@
+<!--@subject Hi, thanks for exploring this product @-->
+<!--@vars {
+"var customer_name":"Customer Name",
+"var product_name":"Product Name",
+"var product_url":"Product URL",
+"var store":"Store"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr>
+        <td>
+            <h2>Hi, thanks for exploring this product</h2>
+            
+            <p>Dear {{var customer_name}},</p>
+            
+            <p>Thank you for your interest in <strong>{{var product_name}}</strong>.</p>
+            
+            <p>We appreciate you taking the time to explore our products. If you have any questions or need more information, please don't hesitate to contact us.</p>
+            
+            <p><a href="{{var product_url}}">View Product</a></p>
+            
+            <p>Best regards,<br>
+            {{var store.getFrontendName()}}</p>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

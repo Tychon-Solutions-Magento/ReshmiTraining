@@ -1,0 +1,24 @@
+<?php
+/** @var \Tychons\ProductInquiry\Block\ProductInquiry $block */
+?>
+<?php if ($block->isCustomerLoggedIn()): ?>
+    <?php $product = $block->getCurrentProduct(); ?>
+    <div class="product-inquiry-container" style="margin: 20px 0;">
+        <button id="product-inquiry-btn" 
+                class="action primary" 
+                type="button"
+                data-product-id="<?= $product->getId() ?>"
+                data-send-url="<?= $block->getSendUrl() ?>">
+            <span>Inquire About This Product</span>
+        </button>
+        <div id="inquiry-message" style="margin-top: 10px; display: none;"></div>
+    </div>
+    
+    <script type="text/x-magento-init">
+    {
+        "#product-inquiry-btn": {
+            "Tychons_ProductInquiry/js/product-inquiry": {}
+        }
+    }
+    </script>
+<?php endif; ?>

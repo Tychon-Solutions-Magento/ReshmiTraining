@@ -1,0 +1,24 @@
+<?php
+namespace Tychons\Personalization\Block;
+
+use Magento\Framework\View\Element\Template;
+use Tychons\Personalization\Model\RecommendationService;
+
+class Recommendation extends Template
+{
+    protected $service;
+
+    public function __construct(
+        Template\Context $context,
+        RecommendationService $service,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+        $this->service = $service;
+    }
+
+    public function getRecommendations()
+    {
+        return $this->service->getRecommendations();
+    }
+}

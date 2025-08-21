@@ -1,0 +1,19 @@
+<?php $data = $block->getRecommendations(); ?>
+<?php if ($data && $data['products']->count()): ?>
+    <div class="personalization-banner" style="margin:20px; padding:20px; background:#f5f5f5; border-radius:8px;">
+        <h2><?= $block->escapeHtml($data['banner']['banner_text'] ?? 'Recommended For You') ?></h2>
+        <?php if (!empty($data['banner']['banner_image'])): ?>
+            <img src="<?= $block->getViewFileUrl($data['banner']['banner_image']) ?>" alt="Banner"/>
+        <?php endif; ?>
+        <div class="products-grid" style="display:flex; gap:20px; flex-wrap:wrap;">
+            <?php foreach ($data['products'] as $product): ?>
+                <div class="product-item" style="width:200px; text-align:center;">
+                    <img src="<?= $block->getViewFileUrl('Magento_Catalog::images/product/placeholder/image.jpg') ?>"
+                         alt="<?= $block->escapeHtml($product->getName()) ?>" style="width:100%;"/>
+                    <p><?= $block->escapeHtml($product->getName()) ?></p>
+                    <p><?= $product->getPrice() ?></p>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>

@@ -1,0 +1,36 @@
+<h1>hello</h1>
+<?php
+// $products = $block->getRecommendedProducts();
+// if (empty($products)) {
+//     echo "<p style='color:red'>DEBUG: No products found</p>";
+// } else {
+//     foreach ($products as $p) {
+//         echo "<li>{$p->getId()} - {$p->getName()}</li>";
+//     }
+// }
+
+
+/** @var $block \Tychons\ProductRecommend\Block\Recommendation */
+$products = $block->getRecommendedProducts();
+?>
+
+<div class="content-heading">
+    <h2 class="title">Recommended for You</h2>
+    <p class="info">Based on your browsing</p>
+</div>
+
+<?php if ($products && $products->getSize()): ?>
+    <div class="products-grid">
+        <?php foreach ($products as $_product): ?>
+            <div class="product-item">
+                <a href="<?= $_product->getProductUrl() ?>">
+                    <?= $block->getImage($_product, 'category_page_grid')->toHtml(); ?>
+                    <h3><?= $block->escapeHtml($_product->getName()) ?></h3>
+                    <span class="price">
+                        <?= $block->getProductPrice($_product) ?>
+                    </span>
+                </a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

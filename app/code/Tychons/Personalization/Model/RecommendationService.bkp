@@ -1,0 +1,75 @@
+<?php
+namespace Tychons\Personalization\Model;
+
+use Magento\Framework\App\ResourceConnection;
+use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Framework\Session\SessionManagerInterface;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+
+class RecommendationService
+{
+    protected $resource;
+    protected $customerSession;
+    protected $session;
+    protected $productCollectionFactory;
+
+    public function __construct(
+        ResourceConnection $resource,
+        CustomerSession $customerSession,
+        SessionManagerInterface $session,
+        ProductCollectionFactory $productCollectionFactory
+    ) {
+        $this->resource = $resource;
+        $this->customerSession = $customerSession;
+        $this->session = $session;
+        $this->productCollectionFactory = $productCollectionFactory;
+    }
+
+    public function getRecommendations($limit = 6)
+    {
+        $connection = $this->resource->getConnection();
+        $viewTable = $this->resource->getTableName('personalization_customer_views');
+        $ruleTable = $this->resource->getTableName('personalization_recommendations');
+
+        $customerId = $this->customerSession->getCustomerId();
+        $sessionId = $this->session->getSessionId();
+
+        // Get last viewed category
+        $lastView = $connection->fetchRow(
+            $connection->select()
+                ->from($viewTable, ['category_ids'])
+                ->where($customerId ? 'customer_id = ?' : 'session_id = ?', $customerId ?: $sessionId)
+                ->order('viewed_at DESC')
+                ->limit(1)
+        );
+
+        if (!$lastView) {
+            return [];
+        }
+
+        $categoryIds = explode(',', $lastView['category_ids']);
+
+        // Find matching recommendation rule
+        $rule = $connection->fetchRow(
+            $connection->select()
+                ->from($ruleTable)
+                ->where('trigger_category_id IN (?)', $categoryIds)
+                ->where('is_active = 1')
+                ->order('id DESC')
+                ->limit(1)
+        );
+
+        if (!$rule) {
+            return [];
+        }
+
+        $recommendedIds = explode(',', $rule['recommended_category_ids']);
+
+        $products = $this->productCollectionFactory->create()
+            ->addAttributeToSelect(['name', 'price', 'image'])
+            ->addCategoriesFilter(['in' => $recommendedIds])
+            ->setPageSize($limit);
+
+        return ['products' => $products, 'banner' => $rule];
+    }
+}
